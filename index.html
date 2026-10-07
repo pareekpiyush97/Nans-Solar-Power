@@ -396,6 +396,22 @@
     *{scroll-behavior:auto!important}
   }
 
+  /* ---------- brand logo + manufacturer block ---------- */
+  .brand__logo{height:44px;width:auto;display:block}
+  .foot__logo{display:inline-flex;background:#fff;border-radius:12px;padding:9px 14px}
+  .foot__logo img{height:46px;width:auto;display:block}
+  .mnav__logo{height:32px;width:auto;display:block}
+  .mfg{display:grid;grid-template-columns:1.25fr 1fr;gap:18px;margin-top:28px}
+  .mfg__card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:22px 24px}
+  .mfg__card.warn{background:var(--amber-50);border-color:#F3D08A}
+  .mfg__h{display:flex;align-items:center;gap:10px;font-family:var(--ff-display);font-weight:700;font-size:.98rem;color:var(--fg)}
+  .mfg__h .ic{width:1.2em;height:1.2em;color:var(--green)}
+  .mfg__card.warn .mfg__h .ic{color:#C97E06}
+  .mfg p{color:var(--muted);font-size:.9rem;line-height:1.6;margin-top:10px}
+  .mfg b{color:var(--fg);font-weight:700}
+  .mfg .link{color:var(--green-700);font-weight:600}
+  @media (max-width:720px){ .mfg{grid-template-columns:1fr} }
+
   /* ---------- responsive ---------- */
   @media (max-width:1120px){
     .nav{display:none}
@@ -431,6 +447,7 @@
   }
   @media (max-width:420px){
     .site-head .wrap{gap:10px}
+    .brand__logo{height:36px}
     .brand__mark{width:40px;height:40px;border-radius:12px}
     .brand__sub{display:none}
     .brand__name{font-size:.98rem}
@@ -487,6 +504,7 @@
     <symbol id="i-fb" viewBox="0 0 24 24"><path d="M14.5 8.5H17V5.2h-2.8c-2 0-3.4 1.4-3.4 3.6v1.9H8v3.3h2.8V22h3.4v-8h2.6l.5-3.3h-3.1V9.2c0-.5.3-.7.9-.7Z" fill="currentColor" stroke="none"/></symbol>
     <symbol id="i-ig" viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" rx="4.5"/><circle cx="12" cy="12" r="3.6"/><circle cx="16.8" cy="7.2" r="1" fill="currentColor" stroke="none"/></symbol>
     <symbol id="i-globe" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.6"/><path d="M3.5 12h17M12 3.4c2.4 2.3 3.6 5.3 3.6 8.6s-1.2 6.3-3.6 8.6c-2.4-2.3-3.6-5.3-3.6-8.6S9.6 5.7 12 3.4Z"/></symbol>
+    <symbol id="i-warn" viewBox="0 0 24 24"><path d="M12 3.5 21 19H3z"/><path d="M12 10v4.2"/><circle cx="12" cy="17.2" r=".7" fill="currentColor" stroke="none"/></symbol>
   </defs>
 </svg>
 
@@ -504,11 +522,7 @@
 <header class="site-head">
   <div class="wrap">
     <a class="brand" href="#top" aria-label="NAN'S SOLAR POWER home">
-      <span class="brand__mark"><svg class="ic"><use href="#i-sun"/></svg></span>
-      <span>
-        <span class="brand__name">NAN'S SOLAR POWER</span><br>
-        <span class="brand__sub">Authorized Adani Solar Dealer · Bikaner</span>
-      </span>
+      <img class="brand__logo" src="assets/logo.png" width="620" height="201" alt="NAN'S SOLAR POWER — Power Your Life with the Sun">
     </a>
     <nav class="nav" aria-label="Primary">
       <a href="#top" class="is-active"><svg class="ic"><use href="#i-home"/></svg>Home</a>
@@ -531,7 +545,7 @@
   <div class="mnav__scrim" data-close></div>
   <div class="mnav__panel">
     <div class="mnav__head">
-      <span class="brand__name" style="font-size:1rem">NAN'S SOLAR</span>
+      <img class="mnav__logo" src="assets/logo.png" width="620" height="201" alt="NAN'S SOLAR POWER">
       <button class="mnav__close" data-close aria-label="Close menu"><svg class="ic"><use href="#i-close"/></svg></button>
     </div>
     <a href="#top" data-close><svg class="ic"><use href="#i-home"/></svg>Home</a>
@@ -798,6 +812,18 @@
         </div>
       </div>
     </div>
+    <div class="mfg">
+      <div class="mfg__card" data-reveal>
+        <div class="mfg__h"><svg class="ic"><use href="#i-badge"/></svg>Manufactured by</div>
+        <p><b>Adani Solar</b> — Mundra Solar Energy Ltd.<br>
+        Sunview No. 8/9A, Nr. Mundra, Kachchh, Gujarat – 370&nbsp;421, India.<br>
+        Model <b>AS-6P-585</b> · Made in India · Certified to IEC&nbsp;61215 / IEC&nbsp;61730 · <span class="link">www.adanigreen.com</span></p>
+      </div>
+      <div class="mfg__card warn" data-reveal>
+        <div class="mfg__h"><svg class="ic"><use href="#i-warn"/></svg>Electrical safety</div>
+        <p>When exposed to sunlight this module generates DC voltage. For use by qualified personnel only — read the installation manual before installing. Risk of electric shock: do not connect or disconnect under load. For field connection, use approved connectors only.</p>
+      </div>
+    </div>
   </div>
 </section>
 
@@ -920,9 +946,8 @@
   <div class="wrap">
     <div class="foot__grid">
       <div class="foot__brand">
-        <a class="brand" href="#top">
-          <span class="brand__mark"><svg class="ic"><use href="#i-sun"/></svg></span>
-          <span><span class="brand__name">NAN'S SOLAR POWER</span><br><span class="brand__sub">Power Your Life with the Sun</span></span>
+        <a class="brand" href="#top" aria-label="NAN'S SOLAR POWER home">
+          <span class="foot__logo"><img src="assets/logo.png" width="620" height="201" alt="NAN'S SOLAR POWER — Power Your Life with the Sun"></span>
         </a>
         <p>Authorized dealer of genuine Adani Solar Modules. Clean Energy Today, Sustainable Tomorrow.</p>
         <div class="foot__socials">
