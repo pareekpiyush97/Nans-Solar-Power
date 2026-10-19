@@ -53,8 +53,8 @@ export default function PortalLayout() {
       </header>
 
       <div className="wrap grid md:grid-cols-[232px_1fr] gap-6 py-6">
-        <aside>
-          <nav className="flex md:flex-col gap-1.5 overflow-x-auto md:sticky md:top-20">
+        <aside className="min-w-0">
+          <nav className="flex flex-wrap md:flex-col md:flex-nowrap gap-1.5 md:sticky md:top-20">
             {items.map((it) => (
               <NavLink key={it.to} to={it.to} className={itemClass}>
                 <it.icon size={18} />

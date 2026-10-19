@@ -49,7 +49,7 @@ export default function VendorOverview() {
       </div>
 
       <div className="grid lg:grid-cols-2 gap-6 mt-6">
-        <div className="card p-6">
+        <div className="card p-6 min-w-0">
           <div className="flex items-center justify-between mb-4">
             <h2 className="font-display font-bold text-lg flex items-center gap-2"><Bell size={20} className="text-green" />Recent notifications</h2>
             <Link to="/portal/notifications" className="link text-sm">View all</Link>
@@ -58,14 +58,14 @@ export default function VendorOverview() {
             {d.notifs.slice(0, 5).map((n) => (
               <li key={n.id} className={`flex gap-3 rounded-xl p-3 ${n.read ? 'bg-surface-2/50' : 'bg-green-50'}`}>
                 <span className={`mt-1 h-2 w-2 rounded-full shrink-0 ${n.read ? 'bg-border-strong' : 'bg-green'}`} />
-                <div><p className="text-sm text-fg-soft">{n.message}</p><p className="text-xs text-muted mt-0.5">{new Date(n.created).toLocaleString()}</p></div>
+                <div className="min-w-0"><p className="text-sm text-fg-soft break-words">{n.message}</p><p className="text-xs text-muted mt-0.5">{new Date(n.created).toLocaleString()}</p></div>
               </li>
             ))}
             {d.notifs.length === 0 && <li className="text-muted text-sm">No notifications.</li>}
           </ul>
         </div>
 
-        <div className="card p-6">
+        <div className="card p-6 min-w-0">
           <div className="flex items-center justify-between mb-4">
             <h2 className="font-display font-bold text-lg flex items-center gap-2"><ShieldCheck size={20} className="text-green" />Awaiting moderation</h2>
             <Link to="/portal/moderation" className="link text-sm">Moderate</Link>

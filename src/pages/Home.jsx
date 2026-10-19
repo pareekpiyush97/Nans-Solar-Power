@@ -61,9 +61,9 @@ export default function Home() {
                 <span className="absolute top-3.5 left-3.5 text-[0.68rem] font-display font-bold tracking-[0.12em] uppercase text-white bg-black/20 px-2.5 py-1.5 rounded-full">Featured Module</span>
                 <Sun size={72} className="text-white/90" />
               </div>
-              <h3 className="text-[1.35rem] font-extrabold mt-4.5 mt-5">Adani Solar · 585 Wp</h3>
+              <h3 className="text-[1.35rem] font-extrabold mt-5">Adani Solar · 585 Wp</h3>
               <p className="text-muted font-semibold text-[0.92rem] mt-1">High Performance · Mono PERC · Made in India</p>
-              <ul className="flex flex-col gap-2.5 mt-4.5 mt-4 text-fg-soft font-semibold text-[0.95rem]">
+              <ul className="flex flex-col gap-2.5 mt-4 text-fg-soft font-semibold text-[0.95rem]">
                 <li className="flex items-center gap-2.5"><Zap size={18} className="text-green" />22.6% module efficiency</li>
                 <li className="flex items-center gap-2.5"><ShieldCheck size={18} className="text-green" />IEC 61215 / 61730 certified</li>
                 <li className="flex items-center gap-2.5"><Sun size={18} className="text-green" />Monocrystalline PERC technology</li>
@@ -103,7 +103,7 @@ export default function Home() {
                 <div className="card p-6 h-full relative hover:-translate-y-1 hover:shadow-md2 transition">
                   <div className="grid place-items-center h-12 w-12 rounded-[14px] bg-green-50 text-green-700 font-display font-extrabold text-xl">{s.n}</div>
                   <s.icon size={24} className="absolute top-6 right-6 text-border-strong" />
-                  <h3 className="text-[1.14rem] font-bold mt-4.5 mt-4">{s.t}</h3>
+                  <h3 className="text-[1.14rem] font-bold mt-4">{s.t}</h3>
                   <p className="text-muted text-[0.95rem] mt-2">{s.d}</p>
                 </div>
               </Reveal>
@@ -173,7 +173,7 @@ export default function Home() {
               </Reveal>
               <Reveal delay={0.15}>
                 <div className="card rounded-xl2 overflow-hidden mt-5">
-                  <div className="flex items-center gap-2.5 px-4.5 px-5 py-3.5 bg-surface-2 font-display font-bold text-[0.92rem]"><FileText size={18} className="text-green" />Technical Specifications</div>
+                  <div className="flex items-center gap-2.5 px-5 py-3.5 bg-surface-2 font-display font-bold text-[0.92rem]"><FileText size={18} className="text-green" />Technical Specifications</div>
                   <dl className="px-5 pb-3">
                     {[['Maximum Power (Pmax)', '585 Wp'], ['Voltage at Pmax (Vmp)', '43.5 V'], ['Current at Pmax (Imp)', '13.45 A'], ['Open Circuit Voltage (Voc)', '52.3 V'], ['Short Circuit Current (Isc)', '14.20 A'], ['Module Efficiency', '22.6%'], ['Standards', 'IEC 61215 / 61730']].map(([k, v], i, a) => (
                       <div key={k} className={`flex justify-between gap-4 py-2.5 text-[0.92rem] ${i < a.length - 1 ? 'border-b border-dashed border-border' : ''}`}>
@@ -187,7 +187,7 @@ export default function Home() {
           </div>
 
           {/* manufacturer + safety */}
-          <div className="grid md:grid-cols-[1.25fr_1fr] gap-4.5 gap-5 mt-7">
+          <div className="grid md:grid-cols-[1.25fr_1fr] gap-5 mt-7">
             <Reveal>
               <div className="card p-6">
                 <div className="flex items-center gap-2.5 font-display font-bold"><BadgeCheck size={20} className="text-green" />Manufactured by</div>
@@ -292,7 +292,7 @@ function Feature({ icon: Icon, color = 'green', title, children }) {
   return (
     <div className="card p-7 h-full hover:-translate-y-1 hover:shadow-md2 transition">
       <div className={`grid place-items-center h-[54px] w-[54px] rounded-[15px] ${ic}`}><Icon size={26} /></div>
-      <h3 className="text-[1.1rem] font-bold mt-4.5 mt-4">{title}</h3>
+      <h3 className="text-[1.1rem] font-bold mt-4">{title}</h3>
       <p className="text-muted text-[0.94rem] mt-2">{children}</p>
     </div>
   )
