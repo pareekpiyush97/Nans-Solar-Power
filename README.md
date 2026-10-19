@@ -69,9 +69,11 @@ npm run build      # outputs dist/
 ```
 
 - `vite.config.js` uses `base: './'` + HashRouter, so it works on a project subpath with no SPA-fallback config.
-- Deploy `dist/` to GitHub Pages — e.g. push it to a `gh-pages` branch, or use a GitHub Action
-  (`actions/deploy-pages`). `.nojekyll` is included.
-- Add your site origin to Pocketbase CORS when you go live.
+- **Auto-deploy is included**: `.github/workflows/deploy.yml` builds and publishes `dist/` to GitHub Pages
+  on every push to `main`. One-time: **Settings → Pages → Source: "GitHub Actions"**.
+- To go **live**, add two repo **Variables** (Settings → Secrets and variables → Actions → *Variables*):
+  `VITE_POCKETBASE_URL` and `VITE_GOOGLE_OAUTH_CLIENT_ID` (both public/safe). Without them the site deploys
+  in demo mode. Add your Pages origin to Pocketbase CORS when you go live.
 
 ---
 
