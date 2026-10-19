@@ -1,0 +1,113 @@
+{
+  "_comment": "Schema reference for NAN'S SOLAR POWER (Pocketbase). This mirrors pocketbase/SETUP.md. Create these collections in the Admin UI (relations are chosen there), then add the indexes and API rules from SETUP.md. 'rel' = relation (single unless noted).",
+  "collections": {
+    "users": {
+      "type": "auth",
+      "note": "Default Pocketbase users collection — ADD these custom fields to it.",
+      "fields": {
+        "name": "text",
+        "role": { "type": "select", "values": ["vendor", "employee"], "maxSelect": 1 },
+        "active": { "type": "bool", "default": true },
+        "vendor": { "type": "rel", "target": "users" },
+        "phone": "text"
+      }
+    },
+    "sites": {
+      "type": "base",
+      "fields": {
+        "client_name": { "type": "text", "required": true },
+        "address": { "type": "text", "required": true },
+        "city": "text",
+        "pincode": "text",
+        "client_phone": "text",
+        "capacity_kw": "number",
+        "system_type": { "type": "select", "values": ["residential", "commercial", "industrial"], "required": true, "maxSelect": 1 },
+        "current_stage": { "type": "select", "values": ["survey", "structure", "panel", "wiring", "earthing", "net_meter", "commissioned"], "maxSelect": 1 },
+        "status": { "type": "select", "values": ["active", "on_hold", "completed"], "maxSelect": 1 },
+        "assigned_employee": { "type": "rel", "target": "users" },
+        "vendor": { "type": "rel", "target": "users" }
+      },
+      "rules": { "list": "@request.auth.id != \"\"", "view": "@request.auth.id != \"\"", "create": "@request.auth.role = \"vendor\" || @request.auth.id = @request.data.assigned_employee", "update": "@request.auth.role = \"vendor\" || @request.auth.id = assigned_employee", "delete": "@request.auth.role = \"vendor\"" }
+    },
+    "site_photos": {
+      "type": "base",
+      "note": "ONE photo per (site, stage). Add UNIQUE index on (site, stage).",
+      "fields": {
+        "site": { "type": "rel", "target": "sites", "required": true },
+        "stage": { "type": "select", "values": ["survey", "structure", "panel", "wiring", "earthing", "net_meter", "commissioned"], "required": true, "maxSelect": 1 },
+        "photo": { "type": "file", "required": true, "maxSelect": 1, "mimeTypes": ["image/jpeg", "image/png", "image/webp"] },
+        "address": { "type": "text", "required": true },
+        "note": "text",
+        "uploaded_by": { "type": "rel", "target": "users" }
+      },
+      "indexes": ["CREATE UNIQUE INDEX idx_site_photos_site_stage ON site_photos (site, stage)"],
+      "rules": { "list": "@request.auth.id != \"\"", "view": "@request.auth.id != \"\"", "create": "@request.auth.role = \"vendor\" || @request.auth.id = @request.data.uploaded_by", "update": "@request.auth.role = \"vendor\" || @request.auth.id = uploaded_by", "delete": "@request.auth.role = \"vendor\"" }
+    },
+    "site_updates": {
+      "type": "base",
+      "fields": {
+        "site": { "type": "rel", "target": "sites", "required": true },
+        "stage": { "type": "select", "values": ["survey", "structure", "panel", "wiring", "earthing", "net_meter", "commissioned"], "required": true, "maxSelect": 1 },
+        "action": { "type": "select", "values": ["updated", "completed"], "required": true, "maxSelect": 1 },
+        "address": { "type": "text", "required": true },
+        "note": "text",
+        "photo": { "type": "rel", "target": "site_photos" },
+        "employee": { "type": "rel", "target": "users" }
+      },
+      "rules": { "list": "@request.auth.id != \"\"", "view": "@request.auth.id != \"\"", "create": "@request.auth.id != \"\"", "update": "@request.auth.role = \"vendor\"", "delete": "@request.auth.role = \"vendor\"" }
+    },
+    "reviews": {
+      "type": "base",
+      "fields": {
+        "author_name": { "type": "text", "required": true },
+        "city": "text",
+        "system_kw": "text",
+        "rating": { "type": "number", "required": true, "min": 1, "max": 5 },
+        "text": { "type": "text", "required": true },
+        "status": { "type": "select", "values": ["pending", "approved", "rejected"], "maxSelect": 1, "default": "pending" }
+      },
+      "rules": { "list": "status = \"approved\" || @request.auth.role = \"vendor\"", "view": "status = \"approved\" || @request.auth.role = \"vendor\"", "create": "@request.data.status = \"pending\"", "update": "@request.auth.role = \"vendor\"", "delete": "@request.auth.role = \"vendor\"" }
+    },
+    "client_stories": {
+      "type": "base",
+      "fields": {
+        "name": { "type": "text", "required": true },
+        "location": "text",
+        "story": { "type": "text", "required": true },
+        "photo": { "type": "file", "maxSelect": 1, "mimeTypes": ["image/jpeg", "image/png", "image/webp"] },
+        "status": { "type": "select", "values": ["pending", "approved", "rejected"], "maxSelect": 1, "default": "pending" }
+      },
+      "rules": { "list": "status = \"approved\" || @request.auth.role = \"vendor\"", "view": "status = \"approved\" || @request.auth.role = \"vendor\"", "create": "@request.data.status = \"pending\"", "update": "@request.auth.role = \"vendor\"", "delete": "@request.auth.role = \"vendor\"" }
+    },
+    "complaints": {
+      "type": "base",
+      "note": "Add UNIQUE index on (code).",
+      "fields": {
+        "code": { "type": "text", "required": true },
+        "client_name": { "type": "text", "required": true },
+        "phone": { "type": "text", "required": true },
+        "email": "text",
+        "site": { "type": "rel", "target": "sites" },
+        "subject": { "type": "text", "required": true },
+        "description": { "type": "text", "required": true },
+        "status": { "type": "select", "values": ["open", "in_progress", "resolved", "closed"], "maxSelect": 1, "default": "open" },
+        "resolution_note": "text",
+        "client_response": "text",
+        "client_satisfied": "bool"
+      },
+      "indexes": ["CREATE UNIQUE INDEX idx_complaints_code ON complaints (code)"],
+      "rules": { "list": "@request.auth.id != \"\"", "view": "", "create": "", "update": "@request.auth.id != \"\" || @request.data.client_response != \"\"", "delete": "@request.auth.role = \"vendor\"" }
+    },
+    "notifications": {
+      "type": "base",
+      "fields": {
+        "recipient": { "type": "rel", "target": "users", "required": true },
+        "type": { "type": "select", "values": ["stage_completed", "new_complaint", "new_review", "new_story"], "maxSelect": 1 },
+        "site": { "type": "rel", "target": "sites" },
+        "message": { "type": "text", "required": true },
+        "read": { "type": "bool", "default": false }
+      },
+      "rules": { "list": "recipient = @request.auth.id", "view": "recipient = @request.auth.id", "create": null, "update": "recipient = @request.auth.id", "delete": null }
+    }
+  }
+}
