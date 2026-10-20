@@ -2,12 +2,12 @@ import { useEffect, useMemo, useState } from 'react'
 import { useParams, Link } from 'react-router-dom'
 import {
   ArrowLeft, MapPin, Phone, Zap, User, Camera, CheckCircle2, Circle, Clock,
-  Save, Pencil, ImageOff, AlertTriangle,
+  Save, Pencil, Plus, ImageOff,
 } from 'lucide-react'
 import { useAuth } from '../../context/AuthContext.jsx'
 import { Field, Spinner } from '../../components/ui/Field.jsx'
 import {
-  getSite, listSitePhotos, listSiteUpdates, getUsersMap, listEmployees,
+  getSite, listSitePhotos, getUsersMap, listEmployees,
   updateStageProgress, updateSite, photoSrc,
 } from '../../lib/api.js'
 import { STAGES, stageLabel, stageIndex } from '../../lib/stages.js'
@@ -20,13 +20,13 @@ export default function SiteDetail() {
   const isVendor = user.role === 'vendor'
   const [site, setSite] = useState(null)
   const [photos, setPhotos] = useState([])
-  const [updates, setUpdates] = useState([])
   const [users, setUsers] = useState({})
   const [loading, setLoading] = useState(true)
+  const [editing, setEditing] = useState(null) // stage key currently being edited
 
   async function reload() {
-    const [s, p, u, um] = await Promise.all([getSite(id), listSitePhotos(id), listSiteUpdates(id), getUsersMap()])
-    setSite(s); setPhotos(p); setUpdates(u); setUsers(um); setLoading(false)
+    const [s, p, um] = await Promise.all([getSite(id), listSitePhotos(id), getUsersMap()])
+    setSite(s); setPhotos(p); setUsers(um); setLoading(false)
   }
   useEffect(() => { reload() }, [id])
 
@@ -39,7 +39,9 @@ export default function SiteDetail() {
   if (!isVendor && site.assigned_employee !== user.id)
     return <div className="card p-8 text-center">This site isn’t assigned to you. <Link to="/portal/sites" className="link">Back to my sites</Link></div>
 
-  const pct = Math.round((stageIndex(site.current_stage) / (STAGES.length - 1)) * 100)
+  const canEdit = isVendor || site.assigned_employee === user.id
+  const curIdx = stageIndex(site.current_stage)
+  const pct = Math.round((curIdx / (STAGES.length - 1)) * 100)
 
   return (
     <div>
@@ -49,7 +51,7 @@ export default function SiteDetail() {
       <div className="card p-6">
         <div className="flex flex-wrap items-start justify-between gap-4">
           <div>
-            <div className="flex items-center gap-2.5">
+            <div className="flex items-center gap-2.5 flex-wrap">
               <h1 className="text-2xl font-extrabold">{site.client_name}</h1>
               <span className={`badge ${TYPE[site.system_type]}`}>{site.system_type}</span>
               <span className={`badge ${site.status === 'completed' ? 'badge-green' : 'badge-sky'}`}>{site.status}</span>
@@ -69,25 +71,36 @@ export default function SiteDetail() {
         </div>
       </div>
 
-      <div className="grid lg:grid-cols-[1fr_380px] gap-6 mt-6 items-start">
-        {/* timeline */}
-        <div className="card p-6">
-          <h2 className="font-display font-bold text-lg mb-4">Stage timeline</h2>
-          <ol className="flex flex-col gap-3">
-            {STAGES.map((st, i) => {
-              const ph = photoByStage[st.key]
-              const done = i < stageIndex(site.current_stage) || (i === stageIndex(site.current_stage) && site.status === 'completed')
-              const current = st.key === site.current_stage
-              return (
-                <li key={st.key} className={`rounded-xl border p-3.5 flex gap-3.5 ${current ? 'border-green bg-green-50/40' : 'border-border'}`}>
+      {/* stage timeline with inline proof + edit */}
+      <div className="card p-6 mt-6">
+        <div className="flex items-center justify-between gap-3 mb-4">
+          <h2 className="font-display font-bold text-lg">Stage timeline</h2>
+          {canEdit && <span className="text-xs text-muted">Tap <span className="font-semibold text-green-700">Add proof / Edit</span> on any stage</span>}
+        </div>
+        <ol className="flex flex-col gap-3">
+          {STAGES.map((st, i) => {
+            const ph = photoByStage[st.key]
+            const done = i < curIdx || (i === curIdx && site.status === 'completed')
+            const current = st.key === site.current_stage && !done
+            const isEditing = editing === st.key
+            return (
+              <li key={st.key} className={`rounded-xl border p-3.5 ${current ? 'border-green bg-green-50/40' : 'border-border'}`}>
+                <div className="flex gap-3.5">
                   <div className="shrink-0 mt-0.5">
                     {ph ? <CheckCircle2 size={20} className="text-green" /> : current ? <Clock size={20} className="text-sky-600" /> : <Circle size={20} className="text-border-strong" />}
                   </div>
                   <div className="min-w-0 flex-1">
                     <div className="flex items-center justify-between gap-2">
                       <span className="font-semibold">{st.label} <span className="font-normal text-muted text-xs">· {st.owner}</span></span>
-                      {done && <span className="badge badge-green">done</span>}
-                      {current && !done && <span className="badge badge-sky">current</span>}
+                      <div className="flex items-center gap-2 shrink-0">
+                        {done && <span className="badge badge-green">done</span>}
+                        {current && !done && <span className="badge badge-sky">current</span>}
+                        {canEdit && (
+                          <button type="button" onClick={() => setEditing(isEditing ? null : st.key)} className="text-xs font-semibold text-green-700 inline-flex items-center gap-1 hover:underline">
+                            {ph ? <><Pencil size={13} />Edit</> : <><Plus size={13} />Add proof</>}
+                          </button>
+                        )}
+                      </div>
                     </div>
                     {ph ? (
                       <div className="mt-2 flex gap-3">
@@ -100,14 +113,15 @@ export default function SiteDetail() {
                       </div>
                     ) : <p className="text-muted text-sm mt-1">Not updated yet.</p>}
                   </div>
-                </li>
-              )
-            })}
-          </ol>
-        </div>
-
-        {/* update form */}
-        <UpdateForm site={site} photoByStage={photoByStage} employee={user} onSaved={reload} />
+                </div>
+                {canEdit && isEditing && (
+                  <StageEditor site={site} stage={st.key} existing={ph} employee={user}
+                    onSaved={async () => { setEditing(null); await reload() }} onCancel={() => setEditing(null)} />
+                )}
+              </li>
+            )
+          })}
+        </ol>
       </div>
     </div>
   )
@@ -119,18 +133,16 @@ function StageThumb({ rec }) {
   return <img src={src} alt="" className="shrink-0 h-16 w-16 rounded-lg object-cover border border-border" />
 }
 
-function UpdateForm({ site, photoByStage, employee, onSaved }) {
-  const [stage, setStage] = useState(site.current_stage)
+// Inline per-stage editor: add/replace the proof photo, edit the note & address,
+// and optionally mark the stage complete. Mirrors updateStageProgress().
+function StageEditor({ site, stage, existing, employee, onSaved, onCancel }) {
   const [file, setFile] = useState(null)
   const [preview, setPreview] = useState('')
-  const [address, setAddress] = useState(`${site.address}, ${site.city}`)
-  const [note, setNote] = useState('')
+  const [address, setAddress] = useState(existing?.address || `${site.address}, ${site.city}`)
+  const [note, setNote] = useState(existing?.note || '')
   const [completed, setCompleted] = useState(false)
   const [busy, setBusy] = useState(false)
-  const [msg, setMsg] = useState('')
   const [err, setErr] = useState('')
-
-  const existing = photoByStage[stage]
 
   function pickFile(e) {
     const f = e.target.files?.[0]
@@ -139,53 +151,37 @@ function UpdateForm({ site, photoByStage, employee, onSaved }) {
   }
 
   async function submit(e) {
-    e.preventDefault(); setErr(''); setMsg('')
+    e.preventDefault(); setErr('')
     if (!address.trim()) { setErr('Address is required.'); return }
-    if (!file && !existing) { setErr('A site photo is required for this stage.'); return }
+    if (!file && !existing) { setErr('A proof photo is required for this stage.'); return }
     setBusy(true)
     try {
       await updateStageProgress({ site, stage, file, address: address.trim(), note, employee, completed })
-      setMsg(completed ? 'Stage marked complete — vendor notified.' : 'Update saved.')
-      setFile(null); setPreview(''); setNote(''); setCompleted(false)
       await onSaved()
     } catch (e) { setErr(e?.message || 'Could not save.') } finally { setBusy(false) }
   }
 
   return (
-    <form onSubmit={submit} className="card p-6 lg:sticky lg:top-24">
-      <h2 className="font-display font-bold text-lg flex items-center gap-2"><Camera size={20} className="text-green" />Log stage update</h2>
-      <p className="text-muted text-sm mt-1 mb-4">A site photo and address are required. A new photo replaces this stage’s previous one.</p>
-      <div className="flex flex-col gap-3.5">
-        <Field label="Stage" required>
-          <select className="input" value={stage} onChange={(e) => { setStage(e.target.value); setFile(null); setPreview('') }}>
-            {STAGES.map((s) => <option key={s.key} value={s.key}>{s.label}{photoByStage[s.key] ? ' ✓' : ''}</option>)}
-          </select>
-        </Field>
-
-        <div>
-          <span className="label">Site photo{!existing && <span className="text-green"> *</span>}</span>
-          <label className="flex flex-col items-center justify-center gap-1.5 rounded-xl border-2 border-dashed border-border-strong bg-surface-2/50 px-4 py-6 cursor-pointer hover:border-green transition text-center">
-            {preview ? <img src={preview} alt="preview" className="h-28 rounded-lg object-cover" /> : (
-              <><Camera size={24} className="text-muted-2" /><span className="text-sm font-semibold text-fg-soft">Tap to add a photo</span><span className="text-xs text-muted">JPG/PNG from site</span></>
-            )}
-            <input type="file" accept="image/*" capture="environment" className="hidden" onChange={pickFile} />
-          </label>
-          {existing && !file && (
-            <p className="text-xs text-muted mt-1.5 flex items-center gap-1"><AlertTriangle size={12} className="text-amber" />This stage already has a photo. Uploading a new one replaces it.</p>
-          )}
-        </div>
-
-        <Field label="Address" required hint="Captured with this update."><input className="input" value={address} onChange={(e) => setAddress(e.target.value)} required /></Field>
-        <Field label="Note"><textarea className="input min-h-[80px]" value={note} onChange={(e) => setNote(e.target.value)} placeholder="What was done at this stage?" /></Field>
-
-        <label className="flex items-center gap-2.5 text-sm font-semibold text-fg-soft cursor-pointer">
-          <input type="checkbox" checked={completed} onChange={(e) => setCompleted(e.target.checked)} className="h-4 w-4 accent-green" />
-          Mark this stage complete (notifies vendor)
+    <form onSubmit={submit} className="mt-3 rounded-xl bg-surface-2 p-3.5 flex flex-col gap-3">
+      <div>
+        <span className="label text-xs">Proof photo{!existing && <span className="text-green"> *</span>}</span>
+        <label className="flex flex-col items-center justify-center gap-1 rounded-xl border-2 border-dashed border-border-strong bg-surface px-4 py-5 cursor-pointer hover:border-green transition text-center">
+          {preview ? <img src={preview} alt="preview" className="h-24 rounded-lg object-cover" />
+            : existing && !file ? <span className="text-xs text-muted">Current photo kept — tap to replace</span>
+            : <><Camera size={20} className="text-muted-2" /><span className="text-xs font-semibold text-fg-soft">Tap to add proof photo</span><span className="text-[11px] text-muted">JPG/PNG from site</span></>}
+          <input type="file" accept="image/*" capture="environment" className="hidden" onChange={pickFile} />
         </label>
-
-        {err && <p className="text-red-600 text-sm">{err}</p>}
-        {msg && <p className="text-green-700 text-sm flex items-center gap-1.5"><CheckCircle2 size={16} />{msg}</p>}
-        <button className="btn btn-primary" disabled={busy}>{busy ? <Spinner /> : <Save size={18} />}Save update</button>
+      </div>
+      <Field label="Address" required><input className="input" value={address} onChange={(e) => setAddress(e.target.value)} /></Field>
+      <Field label="Note"><textarea className="input min-h-[64px]" value={note} onChange={(e) => setNote(e.target.value)} placeholder="What was done at this stage?" /></Field>
+      <label className="flex items-center gap-2 text-sm font-semibold text-fg-soft cursor-pointer">
+        <input type="checkbox" checked={completed} onChange={(e) => setCompleted(e.target.checked)} className="h-4 w-4 accent-green" />
+        Mark this stage complete{completed && ' (notifies vendor)'}
+      </label>
+      {err && <p className="text-red-600 text-sm">{err}</p>}
+      <div className="flex gap-2">
+        <button className="btn btn-primary btn-sm" disabled={busy}>{busy ? <Spinner /> : <Save size={15} />}Save proof</button>
+        <button type="button" className="btn btn-ghost btn-sm" onClick={onCancel}>Cancel</button>
       </div>
     </form>
   )
