@@ -8,6 +8,7 @@ import Home from './pages/Home.jsx'
 import Reviews from './pages/Reviews.jsx'
 import Stories from './pages/Stories.jsx'
 import Support from './pages/Support.jsx'
+import Track from './pages/Track.jsx'
 import Login from './pages/Login.jsx'
 
 import SitesList from './pages/portal/SitesList.jsx'
@@ -53,6 +54,7 @@ export default function App() {
         <Route path="/reviews" element={<Reviews />} />
         <Route path="/stories" element={<Stories />} />
         <Route path="/support" element={<Support />} />
+        <Route path="/track" element={<Track />} />
         <Route path="/login" element={<Login />} />
         <Route path="*" element={<NotFound />} />
       </Route>

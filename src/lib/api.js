@@ -107,6 +107,17 @@ export async function updateComplaint(id, patch) {
 }
 
 /* ----------------------------- sites ----------------------------- */
+// Public customer lookup: match a site by the registered mobile number
+// (normalised to the last 10 digits so spaces / +91 don't matter).
+export async function getSitesByPhone(phone) {
+  const norm = (x) => (x || '').replace(/\D/g, '').slice(-10)
+  const q = norm(phone)
+  if (q.length < 10) return []
+  const all = isLive
+    ? await pb.collection('sites').getFullList({ sort: '-created' })
+    : demo.list('sites').sort((a, b) => b.created.localeCompare(a.created))
+  return all.filter((s) => norm(s.client_phone) === q)
+}
 export async function listAllSites() {
   return isLive
     ? pb.collection('sites').getFullList({ sort: '-created' })
