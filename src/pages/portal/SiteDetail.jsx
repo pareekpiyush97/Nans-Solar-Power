@@ -85,7 +85,7 @@ export default function SiteDetail() {
                   </div>
                   <div className="min-w-0 flex-1">
                     <div className="flex items-center justify-between gap-2">
-                      <span className="font-semibold">{st.label}</span>
+                      <span className="font-semibold">{st.label} <span className="font-normal text-muted text-xs">· {st.owner}</span></span>
                       {done && <span className="badge badge-green">done</span>}
                       {current && !done && <span className="badge badge-sky">current</span>}
                     </div>

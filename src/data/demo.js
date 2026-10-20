@@ -2,7 +2,7 @@
 // so the whole app is usable without a server. Replaced by real Pocketbase when
 // VITE_POCKETBASE_URL is set (see src/lib/api.js).
 
-const LS_KEY = 'nsp_demo_v2'
+const LS_KEY = 'nsp_demo_v3'
 const uid = (p = 'id') => p + Math.random().toString(36).slice(2, 10)
 const now = () => new Date().toISOString()
 
@@ -14,15 +14,15 @@ function seed() {
     { id: emp2, name: 'Suresh Jain', email: 'suresh@nansolar.in', role: 'employee', avatar: '', active: true, vendor: vendorId },
   ]
   const sites = [
-    { id: 's_sharma', client_name: 'Sharma ji', address: 'Plot 14, Gangashahr Road', city: 'Bikaner', pincode: '334001', client_phone: '98290 11111', capacity_kw: 5, system_type: 'residential', current_stage: 'panel', status: 'active', assigned_employee: emp1, vendor: vendorId, created: '2026-09-20T09:00:00Z' },
+    { id: 's_sharma', client_name: 'Sharma ji', address: 'Plot 14, Gangashahr Road', city: 'Bikaner', pincode: '334001', client_phone: '98290 11111', capacity_kw: 5, system_type: 'residential', current_stage: 'installation', status: 'active', assigned_employee: emp1, vendor: vendorId, created: '2026-09-20T09:00:00Z' },
     { id: 's_agro', client_name: 'Maru Agro Industries', address: 'F-22 RIICO Industrial Area', city: 'Bikaner', pincode: '334004', client_phone: '98290 22222', capacity_kw: 50, system_type: 'industrial', current_stage: 'structure', status: 'active', assigned_employee: emp1, vendor: vendorId, created: '2026-09-28T09:00:00Z' },
-    { id: 's_shop', client_name: 'Agarwal Electronics', address: 'KEM Road, near Kothari Hospital', city: 'Bikaner', pincode: '334001', client_phone: '98290 33333', capacity_kw: 8, system_type: 'commercial', current_stage: 'commissioned', status: 'completed', assigned_employee: emp2, vendor: vendorId, created: '2026-08-10T09:00:00Z' },
+    { id: 's_shop', client_name: 'Agarwal Electronics', address: 'KEM Road, near Kothari Hospital', city: 'Bikaner', pincode: '334001', client_phone: '98290 33333', capacity_kw: 8, system_type: 'commercial', current_stage: 'handover', status: 'completed', assigned_employee: emp2, vendor: vendorId, created: '2026-08-10T09:00:00Z' },
   ]
   const site_photos = [
     { id: uid('ph'), site: 's_sharma', stage: 'survey', photo: '', address: 'Plot 14, Gangashahr Road, Bikaner', note: 'Rooftop measured, 5 kW feasible', uploaded_by: emp1, created: '2026-09-21T10:00:00Z' },
     { id: uid('ph'), site: 's_sharma', stage: 'structure', photo: '', address: 'Plot 14, Gangashahr Road, Bikaner', note: 'MS structure installed', uploaded_by: emp1, created: '2026-09-26T10:00:00Z' },
-    { id: uid('ph'), site: 's_sharma', stage: 'panel', photo: '', address: 'Plot 14, Gangashahr Road, Bikaner', note: '10 × Adani 585 Wp panels mounted', uploaded_by: emp1, created: '2026-10-02T10:00:00Z' },
-    { id: uid('ph'), site: 's_shop', stage: 'commissioned', photo: '', address: 'KEM Road, Bikaner', note: 'Net meter installed & commissioned', uploaded_by: emp2, created: '2026-08-30T10:00:00Z' },
+    { id: uid('ph'), site: 's_sharma', stage: 'installation', photo: '', address: 'Plot 14, Gangashahr Road, Bikaner', note: '10 × Adani 585 Wp panels mounted', uploaded_by: emp1, created: '2026-10-02T10:00:00Z' },
+    { id: uid('ph'), site: 's_shop', stage: 'handover', photo: '', address: 'KEM Road, Bikaner', note: 'Net meter installed & commissioned', uploaded_by: emp2, created: '2026-08-30T10:00:00Z' },
   ]
   const reviews = [
     { id: uid('rv'), author_name: 'Rakesh Sharma', city: 'Bikaner', system_kw: '3 kW', rating: 5, text: 'Bijli ka bill ₹5,000 se bahut kam ho gaya. Adani panels lagwaaye, quality top class hai. Zero tension.', status: 'approved', created: '2026-09-01T10:00:00Z' },

@@ -185,7 +185,7 @@ export async function updateStageProgress({ site, stage, file, address, note, em
     // (pocketbase/pb_hooks) on site_updates create, so we don't duplicate it here.
     await pb.collection('sites').update(site.id, {
       current_stage: stage,
-      ...(completed && stage === 'commissioned' ? { status: 'completed' } : {}),
+      ...(completed && stage === 'handover' ? { status: 'completed' } : {}),
     })
   } else {
     const photo = file ? await fileToDataUrl(file) : ''
@@ -196,7 +196,7 @@ export async function updateStageProgress({ site, stage, file, address, note, em
       photoRec = demo.create('site_photos', { site: site.id, stage, photo, address, note: note || '', uploaded_by: employee.id })
     }
     demo.create('site_updates', { site: site.id, stage, action: completed ? 'completed' : 'updated', address, note: note || '', photo: photoRec.id, employee: employee.id })
-    demo.update('sites', site.id, { current_stage: stage, ...(completed && stage === 'commissioned' ? { status: 'completed' } : {}) })
+    demo.update('sites', site.id, { current_stage: stage, ...(completed && stage === 'handover' ? { status: 'completed' } : {}) })
     if (completed) {
       demo.create('notifications', {
         recipient: site.vendor, type: 'stage_completed', site: site.id,
