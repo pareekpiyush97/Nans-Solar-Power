@@ -87,7 +87,7 @@ export default function SiteDetail() {
               <li key={st.key} className={`rounded-xl border p-3.5 ${current ? 'border-green bg-green-50/40' : 'border-border'}`}>
                 <div className="flex gap-3.5">
                   <div className="shrink-0 mt-0.5">
-                    {ph ? <CheckCircle2 size={20} className="text-green" /> : current ? <Clock size={20} className="text-sky-600" /> : <Circle size={20} className="text-border-strong" />}
+                    {done || ph ? <CheckCircle2 size={20} className="text-green" /> : current ? <Clock size={20} className="text-sky-600" /> : <Circle size={20} className="text-border-strong" />}
                   </div>
                   <div className="min-w-0 flex-1">
                     <div className="flex items-center justify-between gap-2">
