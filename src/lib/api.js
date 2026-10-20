@@ -133,6 +133,22 @@ export async function getSite(id) {
 export async function updateSite(id, patch) {
   return isLive ? pb.collection('sites').update(id, patch) : demo.update('sites', id, patch)
 }
+export async function createSite(data) {
+  const payload = {
+    client_name: data.client_name,
+    client_phone: data.client_phone || '',
+    address: data.address || '',
+    city: data.city || 'Bikaner',
+    pincode: data.pincode || '',
+    capacity_kw: Number(data.capacity_kw) || 0,
+    system_type: data.system_type || 'residential',
+    assigned_employee: data.assigned_employee || '',
+    vendor: data.vendor || '',
+    current_stage: 'survey',
+    status: 'active',
+  }
+  return isLive ? pb.collection('sites').create(payload) : demo.create('sites', payload)
+}
 
 /* --------------------- site photos (one per stage) --------------------- */
 export async function listSitePhotos(siteId) {
